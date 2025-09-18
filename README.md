@@ -4,11 +4,18 @@
 
 ## 快速开始
 
-### 启动服务
+### 本地开发
 
 ```bash
 docker-compose up -d
 ```
+
+### Railway 部署
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
+
+1. 点击上面的按钮部署到 Railway
+2. 或者按照 [DEPLOYMENT.md](./DEPLOYMENT.md) 手动部署
 
 ### 访问地址
 
