@@ -1,0 +1,31 @@
+services:
+  # 前端 - 基于 Excalidraw 的协作绘图界面
+  frontend:
+    image: alswl/excalidraw:v0.18.0-fork-b2
+    environment:
+      - VITE_APP_BACKEND_V2_GET_URL=http://127.0.0.1:9001/api/v2/scenes/
+      - VITE_APP_BACKEND_V2_POST_URL=http://127.0.0.1:9001/api/v2/scenes/
+      - VITE_APP_WS_SERVER_URL=http://127.0.0.1:9002
+      - VITE_APP_FIREBASE_CONFIG={}
+      - VITE_APP_HTTP_STORAGE_BACKEND_URL=http://127.0.0.1:9001/api/v2
+      - VITE_APP_STORAGE_BACKEND=http
+    ports:
+      - "9000:80"
+    depends_on:
+      - storage
+      - room
+
+  # 存储后端
+  storage:
+    image: alswl/excalidraw-storage-backend:v2023.11.11
+    restart: always
+    environment:
+      - PORT=8081
+    ports:
+      - "9001:8081"
+
+  # 房间协作服务
+  room:
+    image: excalidraw/excalidraw-room:sha-49bf529
+    ports:
+      - "9002:80"
