@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Excliard 状态检查</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .btn {
+            padding: 15px 30px;
+            margin: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+        .btn:hover { background: #0056b3; }
+        .btn.success { background: #28a745; }
+        .btn.success:hover { background: #1e7e34; }
+        .btn.warning { background: #ffc107; color: #212529; }
+        .btn.warning:hover { background: #e0a800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Canvas Excliard 状态检查</h1>
+        
+        <div class="status info">
+            <strong>当前时间:</strong> <span id="currentTime"></span>
+        </div>
+
+        <div id="serviceStatus" class="status info">
+            正在检查服务状态...
+        </div>
+
+        <div class="status info">
+            <h3>🚀 快速访问</h3>
+            <p>点击下面的按钮访问协作绘图平台：</p>
+            <a href="http://localhost:9000" class="btn success" target="_blank">
+                🎨 打开协作绘图
+            </a>
+            <a href="http://localhost:9000?room=test" class="btn success" target="_blank">
+                🏠 测试房间
+            </a>
+        </div>
+
+        <div class="status info">
+            <h3>🔧 服务管理</h3>
+            <p>如果遇到问题，可以尝试以下操作：</p>
+            <button onclick="restartServices()" class="btn warning">重启服务</button>
+            <button onclick="checkServices()" class="btn">重新检查</button>
+        </div>
+
+        <div class="status info">
+            <h3>📋 故障排除</h3>
+            <ul>
+                <li><strong>页面无法加载:</strong> 清除浏览器缓存，或使用无痕模式</li>
+                <li><strong>连接错误:</strong> 检查防火墙设置，确保端口 9000-9002 未被占用</li>
+                <li><strong>协作功能异常:</strong> 确保所有三个服务都在运行</li>
+                <li><strong>仍然无法访问:</strong> 尝试重启 Docker 服务</li>
+            </ul>
+        </div>
+
+        <div class="status info">
+            <h3>📊 服务详情</h3>
+            <p><strong>协作绘图前端:</strong> http://localhost:9000</p>
+            <p><strong>存储服务:</strong> http://localhost:9001</p>
+            <p><strong>房间服务:</strong> http://localhost:9002</p>
+        </div>
+    </div>
+
+    <script>
+        // 显示当前时间
+        function updateTime() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleString();
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // 检查服务状态
+        async function checkServices() {
+            const services = [
+                { name: '协作绘图前端', url: 'http://localhost:9000' },
+                { name: '存储服务', url: 'http://localhost:9001' },
+                { name: '房间服务', url: 'http://localhost:9002' }
+            ];
+
+            let allGood = true;
+            let statusHtml = '';
+
+            for (const service of services) {
+                try {
+                    const response = await fetch(service.url);
+                    if (response.ok) {
+                        statusHtml += `✅ ${service.name} - 正常运行 (${response.status})<br>`;
+                    } else {
+                        statusHtml += `❌ ${service.name} - 异常状态 (${response.status})<br>`;
+                        allGood = false;
+                    }
+                } catch (error) {
+                    statusHtml += `❌ ${service.name} - 连接失败: ${error.message}<br>`;
+                    allGood = false;
+                }
+            }
+
+            const statusDiv = document.getElementById('serviceStatus');
+            statusDiv.innerHTML = statusHtml;
+            statusDiv.className = `status ${allGood ? 'success' : 'error'}`;
+        }
+
+        // 重启服务（模拟）
+        function restartServices() {
+            alert('请运行以下命令重启服务:\n\ndocker-compose restart\n\n然后刷新此页面检查状态。');
+        }
+
+        // 页面加载时检查服务
+        window.addEventListener('load', () => {
+            setTimeout(checkServices, 1000);
+        });
+    </script>
+</body>
+</html>

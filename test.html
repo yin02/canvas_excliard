@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务状态检查</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 服务状态检查</h1>
+        
+        <div class="status info">
+            <strong>当前时间:</strong> <span id="currentTime"></span>
+        </div>
+
+        <div id="serviceStatus" class="status info">
+            正在检查服务状态...
+        </div>
+
+        <div class="status info">
+            <h3>访问链接</h3>
+            <a href="http://localhost:9000" class="btn" target="_blank">打开协作绘图</a>
+            <a href="http://localhost:9001" class="btn" target="_blank">存储服务</a>
+            <a href="http://localhost:9002" class="btn" target="_blank">房间服务</a>
+        </div>
+
+        <div class="status info">
+            <h3>故障排除</h3>
+            <p>如果无法访问，请尝试：</p>
+            <ul>
+                <li>清除浏览器缓存</li>
+                <li>使用无痕模式</li>
+                <li>检查防火墙设置</li>
+                <li>重启服务：<code>docker-compose restart</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 显示当前时间
+        function updateTime() {
+            document.getElementById('currentTime').textContent = new Date().toLocaleString();
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // 检查服务状态
+        async function checkServices() {
+            const services = [
+                { name: '协作绘图前端', url: 'http://localhost:9000' },
+                { name: '存储服务', url: 'http://localhost:9001' },
+                { name: '房间服务', url: 'http://localhost:9002' }
+            ];
+
+            let allGood = true;
+            let statusHtml = '';
+
+            for (const service of services) {
+                try {
+                    const response = await fetch(service.url);
+                    if (response.ok) {
+                        statusHtml += `✅ ${service.name} - 正常 (${response.status})<br>`;
+                    } else {
+                        statusHtml += `❌ ${service.name} - 异常 (${response.status})<br>`;
+                        allGood = false;
+                    }
+                } catch (error) {
+                    statusHtml += `❌ ${service.name} - 错误: ${error.message}<br>`;
+                    allGood = false;
+                }
+            }
+
+            const statusDiv = document.getElementById('serviceStatus');
+            statusDiv.innerHTML = statusHtml;
+            statusDiv.className = `status ${allGood ? 'success' : 'error'}`;
+        }
+
+        // 页面加载时检查服务
+        window.addEventListener('load', () => {
+            setTimeout(checkServices, 1000);
+        });
+    </script>
+</body>
+</html>

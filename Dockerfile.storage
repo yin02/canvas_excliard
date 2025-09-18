@@ -1,0 +1,7 @@
+FROM alswl/excalidraw-storage-backend:v2023.11.11
+
+ENV PORT=8081
+
+EXPOSE 8081
+
+CMD ["npm", "run", "start:prod"]

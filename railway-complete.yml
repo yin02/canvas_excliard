@@ -1,0 +1,26 @@
+# Railway 完整部署配置
+# 这个文件包含了所有三个服务的配置
+
+# 前端服务
+frontend:
+  build:
+    dockerfile: Dockerfile
+  environment:
+    - VITE_APP_BACKEND_V2_GET_URL=https://canvas-excliard-storage-production.up.railway.app/api/v2/scenes/
+    - VITE_APP_BACKEND_V2_POST_URL=https://canvas-excliard-storage-production.up.railway.app/api/v2/scenes/
+    - VITE_APP_WS_SERVER_URL=https://canvas-excliard-room-production.up.railway.app
+    - VITE_APP_FIREBASE_CONFIG={}
+    - VITE_APP_HTTP_STORAGE_BACKEND_URL=https://canvas-excliard-storage-production.up.railway.app/api/v2
+    - VITE_APP_STORAGE_BACKEND=http
+
+# 存储服务
+storage:
+  build:
+    dockerfile: Dockerfile.storage
+  environment:
+    - PORT=8081
+
+# 房间服务  
+room:
+  build:
+    dockerfile: Dockerfile.room

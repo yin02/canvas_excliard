@@ -1,0 +1,5 @@
+FROM excalidraw/excalidraw-room:sha-49bf529
+
+EXPOSE 80
+
+CMD ["node", "dist/index.js"]
